@@ -1,14 +1,17 @@
+from typing import Optional
+
 from fastapi import HTTPException, APIRouter
 from uuid import UUID as PyUUID
 from src.database.database_manager import SessionLocal
-from src.database.schemas.row_schema import Row, RowSchema, RowCreateUpdate, RowList
+from src.database.schemas.cabinet_schema import CabinetSchema
+from src.database.schemas.row_schema import Row, RowSchema, RowCreate, RowUpdate, RowList
 
 router = APIRouter()
 
 
 @router.get("/rows", response_model=list[Row])
-def list_rows(request_data: RowList):
-    cabinet_ids = request_data.cabinet_ids
+def list_rows(request_data: Optional[RowList] = None):
+    cabinet_ids = request_data.cabinet_ids if request_data else None
 
     db = SessionLocal()
     if cabinet_ids:
@@ -30,9 +33,13 @@ def get_row(row_id: PyUUID):
 
 
 @router.post("/rows", response_model=Row)
-def create_row(row: RowCreateUpdate):
+def create_row(row: RowCreate):
     db = SessionLocal()
     try:
+        cabinet_ref = db.query(CabinetSchema).filter(CabinetSchema.id == row.cabinet_id).first()
+        if not cabinet_ref:
+            raise HTTPException(status_code=404, detail=f"Unable to find Cabinet by id: {row.cabinet_id}")
+
         db_row = RowSchema(**row.model_dump())
         db.add(db_row)
         db.commit()
@@ -43,7 +50,7 @@ def create_row(row: RowCreateUpdate):
 
 
 @router.put("/rows/{row_id}", response_model=Row)
-def update_row(row_id: PyUUID, updated_row: RowCreateUpdate):
+def update_row(row_id: PyUUID, updated_row: RowUpdate):
     db = SessionLocal()
     try:
         existing_row = db.query(RowSchema).filter(RowSchema.id == row_id).first()

@@ -2,10 +2,9 @@ from typing import List, Optional
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.sql.sqltypes import JSON
 from pydantic import BaseModel, validator
 import uuid
-
-from sqlalchemy.sql.sqltypes import JSON
 
 from src.database.database_manager import Base
 from src.database.schemas.vec3_schema import Vec3
@@ -31,10 +30,9 @@ class CabinetList(BaseModel):
     store_ids: Optional[List[uuid.UUID]] = None
 
 
-class CabinetCreateUpdate(BaseModel):
+class CabinetUpdate(BaseModel):
     position: Vec3
     size: Vec3
-    store_id: uuid.UUID
 
     @validator('position', 'size', pre=True)
     def validate_json_fields(cls, value):
@@ -47,3 +45,7 @@ class CabinetCreateUpdate(BaseModel):
             return value
         except Exception as e:
             raise ValueError('Invalid JSON data') from e
+
+
+class CabinetCreate(CabinetUpdate):
+    store_id: uuid.UUID

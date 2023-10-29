@@ -27,7 +27,10 @@ class RowList(BaseModel):
     cabinet_ids: Optional[List[uuid.UUID]] = None
 
 
-class RowCreateUpdate(BaseModel):
+class RowUpdate(BaseModel):
     position_z: Optional[float] = 0
     height_z: Optional[float] = 0
+
+
+class RowCreate(RowUpdate):
     cabinet_id: uuid.UUID
