@@ -1,0 +1,1 @@
+docker run -d --name tx-inventory_db -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=test_db -p 54301:5432 postgres:14
