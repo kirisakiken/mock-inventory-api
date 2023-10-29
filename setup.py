@@ -15,6 +15,9 @@ setup(
         "alembic ~= 1.6.5",
     ],
     extras_require={
+        "dev": [
+            "flake8 ~= 6.1.0",
+        ],
         "test": [
             "pytest ~= 6.2.4",
             "ddt ~= 1.4.2",
