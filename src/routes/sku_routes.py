@@ -2,6 +2,7 @@ from typing import Optional
 
 from fastapi import HTTPException, APIRouter
 from uuid import UUID as PyUUID
+
 from src.database.database_manager import SessionLocal
 from src.database.schemas.brand_schema import BrandSchema
 from src.database.schemas.sku_schema import Sku, SkuSchema, SkuCreate, SkuUpdate, SkuList
