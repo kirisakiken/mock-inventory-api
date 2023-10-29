@@ -1,15 +1,18 @@
+from typing import Optional
+
 from fastapi import HTTPException, APIRouter
 from uuid import UUID as PyUUID
 
 from src.database.database_manager import SessionLocal
-from src.database.schemas.cabinet_schema import Cabinet, CabinetSchema, CabinetCreateUpdate, CabinetList
+from src.database.schemas.cabinet_schema import Cabinet, CabinetSchema, CabinetCreate, CabinetUpdate, CabinetList
+from src.database.schemas.store_schema import StoreSchema
 
 router = APIRouter()
 
 
 @router.get("/cabinets", response_model=list[Cabinet])
-def list_cabinets(request_data: CabinetList):
-    store_ids = request_data.store_ids
+def list_cabinets(request_data: Optional[CabinetList] = None):
+    store_ids = request_data.store_ids if request_data else None
 
     db = SessionLocal()
     if store_ids:
@@ -32,9 +35,13 @@ def get_cabinet(cabinet_id: PyUUID):
 
 
 @router.post("/cabinets", response_model=Cabinet)
-def create_cabinet(cabinet: CabinetCreateUpdate):
+def create_cabinet(cabinet: CabinetCreate):
     db = SessionLocal()
     try:
+        store_ref = db.query(StoreSchema).filter(StoreSchema.id == cabinet.store_id).first()
+        if not store_ref:
+            raise HTTPException(status_code=404, detail=f"Unable to find store by id: {cabinet.store_id}")
+
         db_cabinet = CabinetSchema(**cabinet.model_dump())
         db.add(db_cabinet)
         db.commit()
@@ -45,7 +52,7 @@ def create_cabinet(cabinet: CabinetCreateUpdate):
 
 
 @router.put("/cabinets/{cabinet_id}", response_model=Cabinet)
-def update_cabinet(cabinet_id: PyUUID, updated_cabinet: CabinetCreateUpdate):
+def update_cabinet(cabinet_id: PyUUID, updated_cabinet: CabinetUpdate):
     db = SessionLocal()
     try:
         existing_cabinet = db.query(CabinetSchema).filter(CabinetSchema.id == cabinet_id).first()
