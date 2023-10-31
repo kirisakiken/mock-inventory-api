@@ -41,6 +41,9 @@ class Sku(BaseModel):
     timestamp: int
     brand_name: str
 
+    class Config:
+        from_attributes = True
+
 
 class SkuList(BaseModel):
     brand_names: Optional[List[str]] = None

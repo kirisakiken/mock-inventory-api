@@ -25,6 +25,9 @@ class Lane(BaseModel):
     position_x: float
     row_id: uuid.UUID
 
+    class Config:
+        from_attributes = True
+
 
 class LaneList(BaseModel):
     row_ids: Optional[List[str]] = None

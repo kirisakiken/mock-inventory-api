@@ -13,6 +13,9 @@ class BrandSchema(Base):
 class Brand(BaseModel):
     name: str
 
+    class Config:
+        from_attributes = True
+
 
 class BrandCreate(BaseModel):
     name: str
