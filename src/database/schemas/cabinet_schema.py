@@ -25,6 +25,9 @@ class Cabinet(BaseModel):
     size: Vec3
     store_id: uuid.UUID
 
+    class Config:
+        from_attributes = True
+
 
 class CabinetList(BaseModel):
     store_ids: Optional[List[uuid.UUID]] = None

@@ -22,6 +22,9 @@ class Row(BaseModel):
     height_z: float
     cabinet_id: uuid.UUID
 
+    class Config:
+        from_attributes = True
+
 
 class RowList(BaseModel):
     cabinet_ids: Optional[List[uuid.UUID]] = None

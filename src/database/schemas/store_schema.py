@@ -19,6 +19,9 @@ class Store(BaseModel):
     brand: str
     name: str
 
+    class Config:
+        from_attributes = True
+
 
 class StoreCreate(BaseModel):
     brand: str
